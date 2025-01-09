@@ -1,66 +1,85 @@
 import streamlit as st
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-import numpy as np
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, confusion_matrix
 
+st.title("📧 Spam Email Detection")
 
-st.title('📧 Spam Email Detection')
+st.write("Classify emails as spam or not spam using machine learning")
 
-st.write('Email detection made by Btin7')
+df = pd.read_csv("spam.csv", encoding='latin-1')
+df = df[['v1', 'v2']]
+df.columns = ['label', 'message']
+df['label'] = df['label'].map({'ham': 0, 'spam': 1})
 
-with st.expander("Dataset"):
-    df = pd.read_csv('spam.csv', encoding='latin-1')
-    df = df[['v1', 'v2']]  # Selecting relevant columns
-    df.columns = ['label', 'message']  # Renaming columns for clarity
+with st.expander("Data Analysis"):
+    st.subheader("Class Distribution")
+    counts = df['label'].value_counts()
+    fig, ax = plt.subplots()
+    sns.barplot(x=counts.index, y=counts.values, palette="muted", ax=ax)
+    ax.set_xticklabels(['Not Spam', 'Spam'])
+    ax.set_ylabel("Count")
+    st.pyplot(fig)
+    
+    st.subheader("Message Length Distribution")
+    df['message_length'] = df['message'].apply(len)
+    fig, ax = plt.subplots()
+    sns.histplot(data=df, x='message_length', hue='label', bins=30, kde=True, palette='muted', ax=ax)
+    ax.set_xlabel("Message Length")
+    st.pyplot(fig)
 
-    st.write('**Dataset Preview**')
-    st.dataframe(df.head())
+tfidf = TfidfVectorizer(stop_words='english', max_features=3000)
+X = tfidf.fit_transform(df['message'])
+y = df['label']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    st.write('**Dataset Shape:**', df.shape)
+models = {
+    "Logistic Regression": LogisticRegression(),
+    "Random Forest": RandomForestClassifier(),
+    "SVM": SVC(probability=True)
+}
+results = {}
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    results[name] = accuracy_score(y_test, y_pred)
 
-with st.expander("Data Preparation"):
-    st.write('**Target Mapping**')
-    df['label'] = df['label'].map({'ham': 0, 'spam': 1})  # Encode labels (0 = ham, 1 = spam)
-    st.write(df['label'].value_counts())
+with st.expander("Model Comparison"):
+    st.subheader("Model Accuracy")
+    fig, ax = plt.subplots()
+    sns.barplot(x=list(results.keys()), y=list(results.values()), palette="muted", ax=ax)
+    ax.set_ylabel("Accuracy")
+    st.pyplot(fig)
 
+    best_model_name = max(results, key=results.get)
+    st.write(f"Best Model: {best_model_name} with Accuracy: {results[best_model_name]:.2f}")
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        df['message'], df['label'], test_size=0.2, random_state=42
-    )
+if st.button("Hyperparameter Tuning for Random Forest"):
+    param_grid = {
+        'n_estimators': [100, 200, 300],
+        'max_depth': [10, 20, None],
+        'min_samples_split': [2, 5, 10]
+    }
+    grid_search = GridSearchCV(RandomForestClassifier(), param_grid, cv=3, scoring='accuracy', n_jobs=-1)
+    grid_search.fit(X_train, y_train)
+    best_params = grid_search.best_params_
+    st.write(f"Best Parameters: {best_params}")
+    best_model = grid_search.best_estimator_
+    y_pred = best_model.predict(X_test)
+    st.write(f"Accuracy with Best Parameters: {accuracy_score(y_test, y_pred):.2f}")
 
-    vectorizer = TfidfVectorizer(stop_words='english', max_features=3000)
-    X_train_vectorized = vectorizer.fit_transform(X_train)
-    X_test_vectorized = vectorizer.transform(X_test)
-
-    st.write('Data is split into training and testing sets.')
-
-with st.expander("Train Model"):
-    clf = RandomForestClassifier(random_state=42)
-    clf.fit(X_train_vectorized, y_train)
-
-    y_pred = clf.predict(X_test_vectorized)
-    acc = accuracy_score(y_test, y_pred)
-    st.write(f"**Model Accuracy:** {acc:.2f}")
-
-
-with st.sidebar:
-    st.header("Input Email Content")
-    email_input = st.text_area(
-        "Type or paste an email to classify",
-        "Congratulations! You've won a free gift card. Click here to claim your prize."
-    )
-
-    if st.button("Classify"):
-        input_vectorized = vectorizer.transform([email_input])
-        prediction = clf.predict(input_vectorized)
-        prediction_proba = clf.predict_proba(input_vectorized)
-
-        # Display results
-        st.subheader("Prediction")
-        st.write("**Spam**" if prediction[0] == 1 else "**Not Spam**")
-
-        st.subheader("Prediction Probability")
-        st.write(f"Spam: {prediction_proba[0][1]:.2f}, Not Spam: {prediction_proba[0][0]:.2f}")
+st.sidebar.header("Input Email")
+email_input = st.sidebar.text_area("Enter email content")
+if st.sidebar.button("Classify"):
+    best_model = RandomForestClassifier(n_estimators=300, max_depth=None, min_samples_split=2)
+    best_model.fit(X_train, y_train)
+    input_transformed = tfidf.transform([email_input])
+    prediction = best_model.predict(input_transformed)
+    label = "Spam" if prediction[0] == 1 else "Not Spam"
+    st.sidebar.success(f"Prediction: {label}")
