@@ -13,7 +13,7 @@ st.title("📧 Spam Email Detection")
 
 st.write("Classify emails as spam or not spam using machine learning")
 
-df = pd.read_csv("spam.csv", encoding='latin-1')
+df = pd.read_csv("emails.csv", encoding='latin-1')
 df = df[['v1', 'v2']]
 df.columns = ['label', 'message']
 df['label'] = df['label'].map({'ham': 0, 'spam': 1})
