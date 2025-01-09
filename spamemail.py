@@ -11,7 +11,7 @@ st.title('📧 Spam Email Detection')
 
 st.write('Email detection made by Btin7')
 
-with st.expander("Load Dataset"):
+with st.expander("Dataset"):
     df = pd.read_csv('spam.csv', encoding='latin-1')
     df = df[['v1', 'v2']]  # Selecting relevant columns
     df.columns = ['label', 'message']  # Renaming columns for clarity
