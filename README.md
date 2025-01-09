@@ -20,9 +20,9 @@ Install dependencies:
 - Numpy
 
 ## File Structure
-- `app.py`: Main Streamlit application.
+- `spamemail.py`: Main Streamlit application.
 - `requirements.txt`: List of required Python libraries.
-- `spam.csv`: Dataset used for training and testing.
+- `emails_cleaned.csv`: Dataset used for training and testing.
 
 ## Usage
 - Paste the email content into the text box on the sidebar.
