@@ -12,7 +12,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 st.title("📧 Spam Email Detection")
 st.write("Classify emails as spam or not spam using machine learning")
 
-df = pd.read_csv("emails.csv")
+df = pd.read_csv("emails_cleaned.csv")
 if 'text' in df.columns and 'spam' in df.columns:
     df = df[['text', 'spam']]
     df.columns = ['message', 'label']
