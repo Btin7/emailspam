@@ -1,4 +1,4 @@
-# Spam Email Detection
+# 📧 Spam Email Detection
 made by Btin7
 
 ## Features
@@ -7,25 +7,11 @@ made by Btin7
 - **Model Training**: Uses a `RandomForestClassifier` to classify emails.
 - **Real-Time Classification**: Allows users to input email text and get predictions instantly.
 
-## Dataset
-The app uses the SMS Spam Collection Dataset, which contains labeled SMS messages as spam or ham (not spam). The dataset can be downloaded from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/sms+spam+collection) or other sources.
 
-## How to Run
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd spam-email-detection
-   ```
-2. Install dependencies:
+Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Run the application:
-   ```bash
-   streamlit run app.py
-   ```
-4. Open the app in your browser at `http://localhost:8501`.
-
 ## Requirements
 - Python 3.8+
 - Streamlit
