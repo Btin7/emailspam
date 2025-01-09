@@ -8,16 +8,18 @@ made by Btin7
 - **Real-Time Classification**: Allows users to input email text and get predictions instantly.
 
 
-Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+
 ## Requirements
 - Python 3.8+
 - Streamlit
 - Scikit-learn
 - Pandas
 - Numpy
+- seaborn
+Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## File Structure
 - `spamemail.py`: Main Streamlit application.
