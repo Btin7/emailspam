@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score
 
 st.title("📧 Spam Email Detection")
 
@@ -18,6 +18,9 @@ df = df[['v1', 'v2']]
 df.columns = ['label', 'message']
 df['label'] = df['label'].map({'ham': 0, 'spam': 1})
 
+with st.expander("Dataset"):
+    st.write(df)
+
 with st.expander("Data Analysis"):
     st.subheader("Class Distribution")
     counts = df['label'].value_counts()
@@ -26,7 +29,7 @@ with st.expander("Data Analysis"):
     ax.set_xticklabels(['Not Spam', 'Spam'])
     ax.set_ylabel("Count")
     st.pyplot(fig)
-    
+
     st.subheader("Message Length Distribution")
     df['message_length'] = df['message'].apply(len)
     fig, ax = plt.subplots()
