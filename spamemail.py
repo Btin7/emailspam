@@ -7,11 +7,11 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 
 st.title("📧 Spam Email Detection")
 
-st.write("You can classify wether if an email is spam or ham(not spam).")
+st.write("Classify emails as spam or not spam using machine learning")
 
 df = pd.read_csv("spam.csv", encoding='latin-1')
 df = df[['v1', 'v2']]
@@ -29,7 +29,7 @@ with st.expander("Data Analysis"):
     ax.set_xticklabels(['Not Spam', 'Spam'])
     ax.set_ylabel("Count")
     st.pyplot(fig)
-    
+
     st.subheader("Message Length Distribution")
     df['message_length'] = df['message'].apply(len)
     fig, ax = plt.subplots()
@@ -52,7 +52,7 @@ for name, model in models.items():
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     results[name] = accuracy_score(y_test, y_pred)
-st.write("0 means not spam, 1 means spam.")
+
 with st.expander("Model Comparison"):
     st.subheader("Model Accuracy")
     fig, ax = plt.subplots()
@@ -62,6 +62,17 @@ with st.expander("Model Comparison"):
 
     best_model_name = max(results, key=results.get)
     st.write(f"Best Model: {best_model_name} with Accuracy: {results[best_model_name]:.2f}")
+
+    st.subheader("Model Evaluation Metrics")
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+    roc_auc = roc_auc_score(y_test, models[best_model_name].predict_proba(X_test)[:, 1])
+
+    st.write(f"Precision: {precision:.2f}")
+    st.write(f"Recall: {recall:.2f}")
+    st.write(f"F1-Score: {f1:.2f}")
+    st.write(f"ROC-AUC: {roc_auc:.2f}")
 
 if st.button("Hyperparameter Tuning for Random Forest"):
     param_grid = {
