@@ -44,7 +44,7 @@ with st.expander("Data Analysis"):
     ax.set_xlabel("Message Length")
     st.pyplot(fig)
 
-tfidf = TfidfVectorizer(stop_words='english', max_features=3000)
+tfidf = TfidfVectorizer(stop_words='english', max_features=5730)
 X = tfidf.fit_transform(df['message'])
 y = df['label']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
