@@ -14,9 +14,7 @@ st.title("📧 Spam Email Detection")
 st.write("Classify emails as spam or not spam using machine learning")
 
 df = pd.read_csv("emails.csv", encoding='latin-1')
-df = df[['text', 'spam']]
-df.columns = ['label', 'message']
-df['label'] = df['label'].map({'ham': 0, 'spam': 1})
+df.columns = ['message', 'label']
 
 with st.expander("Dataset"):
     st.write(df)
@@ -64,10 +62,11 @@ with st.expander("Model Comparison"):
     st.write(f"Best Model: {best_model_name} with Accuracy: {results[best_model_name]:.2f}")
 
     st.subheader("Model Evaluation Metrics")
-    precision = precision_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
-    roc_auc = roc_auc_score(y_test, models[best_model_name].predict_proba(X_test)[:, 1])
+    best_model = models[best_model_name]
+    precision = precision_score(y_test, best_model.predict(X_test))
+    recall = recall_score(y_test, best_model.predict(X_test))
+    f1 = f1_score(y_test, best_model.predict(X_test))
+    roc_auc = roc_auc_score(y_test, best_model.predict_proba(X_test)[:, 1])
 
     st.write(f"Precision: {precision:.2f}")
     st.write(f"Recall: {recall:.2f}")
