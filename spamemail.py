@@ -35,7 +35,7 @@ with st.expander("Data Preparation"):
     X_train_vectorized = vectorizer.fit_transform(X_train)
     X_test_vectorized = vectorizer.transform(X_test)
 
-    st.write('Data is prepared and split into training and testing sets.')
+    st.write('Data is split into training and testing sets.')
 
 with st.expander("Train Model"):
     clf = RandomForestClassifier(random_state=42)
